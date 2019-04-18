@@ -187,7 +187,6 @@ if __name__ == '__main__':
     Sudoku.printGrid(easy)
     easy_result = Sudoku.solve(easy)
     Sudoku.printGrid(easy_result)
-    '''
     hard = [[0,0,5,3,0,0,0,0,0],
             [8,0,0,0,0,0,0,2,0],
             [0,7,0,0,1,0,5,0,0],
@@ -199,4 +198,4 @@ if __name__ == '__main__':
             [0,0,0,0,0,9,7,0,0]]
     Sudoku.printGrid(hard)
     hard_result = Sudoku.solve(hard)
-    Sudoku.printGrid(hard_result)'''
+    Sudoku.printGrid(hard_result)
