@@ -69,22 +69,22 @@ class Sudoku:
 
     @staticmethod
     def makeImplications(grid, i, j, value):
-        '''(list of list of int, int, int, int) -> list of (int, int, int)
+        '''(list of (list of int), int, int, int) -> list of (int, int, int)
         '''
         global sectors
         grid[i][j] = value
-        impl = [(i, j, e)]
-        for sect in range(len(sectors)):
+        impl = [(i, j, value)]
+        for cur_sect in range(len(sectors)):
             sectInfo = []
-            # find missing element in sect sectors
+            # find missing element in cur_sect sectors
             validSet = {1, 2, 3, 4, 5, 6, 7, 8, 9}
-            for x in range(sectors[sect][0], sectors[sect][1]):
-                for y in range(sectors[sect][2], sectors[sect][3]):
+            for x in range(sectors[cur_sect][0], sectors[cur_sect][1]):
+                for y in range(sectors[cur_sect][2], sectors[cur_sect][3]):
                     if grid[x][y] != 0:
                         validSet.remove(grid[x][y])
             # attach copy of validSet to each missing square in sect sector
-            for x in range(sectors[sect][0], sectors[sect][1]):
-                for y in range(sectors[sect][2], sectors[sect][3]):
+            for x in range(sectors[cur_sect][0], sectors[cur_sect][1]):
+                for y in range(sectors[cur_sect][2], sectors[cur_sect][3]):
                     if grid[x][y] != 0:
                         sectInfo.append([x, y, validSet.copy()])
             for m in range(len(sectInfo)):
@@ -103,10 +103,18 @@ class Sudoku:
                 # check if theres only one value left in vset
                 if len(valLeft) == 1:
                     value = valLeft.pop()
-                    if isValid(grid, curSectInfo[0], curSectInfo[1], value):
-                        gird[curSectInfo[0], curSectInfo[1]] = value
-                        impl.append(curSectInfo[0], curSectInfo[1], value)
+                    if Sudoku.is_valid(grid, curSectInfo[0], curSectInfo[1],
+                                       value):
+                        grid[curSectInfo[0]][curSectInfo[1]] = value
+                        impl.append((curSectInfo[0], curSectInfo[1], value))
         return impl
+
+    def undoImplications(grid, impl):
+        '''(list of (list of int), list of (int, int, int)) -> None
+        '''
+        for i in range(len(impl)):
+            grid[impl[i][0]][impl[i][1]] = 0
+    
             
             
         
@@ -124,14 +132,12 @@ class Sudoku:
         for cur_value in range(1, 10):
             # check if putting cur_value in grid[next_i, next_j] is valid
             if Sudoku.is_valid(grid, next_i, next_j, cur_value):
-                # assign cur_value to next cell
-                grid[next_i][next_j] = cur_value
+                impl = Sudoku.makeImplications(grid, next_i, next_j, cur_value)
                 # try solve the rest of sudoko grid
                 if Sudoku.solveSudoko(grid):
                     return True
                 # if current grid configuration leads to unsolvable
-                # remove the value we assigned
-                grid[next_i][next_j] = 0
+                Sudoku.undoImplications(grid, impl)
         # if the none of the 1-9 solved the next empty cell
         # this sudoko is unsolvable
         return False
@@ -172,6 +178,7 @@ if __name__ == '__main__':
     Sudoku.printGrid(easy)
     easy_result = Sudoku.solve(easy)
     Sudoku.printGrid(easy_result)
+    '''
     hard = [[0,0,5,3,0,0,0,0,0],
             [8,0,0,0,0,0,0,2,0],
             [0,7,0,0,1,0,5,0,0],
@@ -183,4 +190,4 @@ if __name__ == '__main__':
             [0,0,0,0,0,9,7,0,0]]
     Sudoku.printGrid(hard)
     hard_result = Sudoku.solve(hard)
-    Sudoku.printGrid(hard_result)
+    Sudoku.printGrid(hard_result)'''
